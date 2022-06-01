@@ -1,9 +1,9 @@
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 
 class Game implements ActionListener {
+  //variables to make gui display
   JFrame frame;
   JPanel game;
   JPanel cats;
@@ -20,6 +20,7 @@ class Game implements ActionListener {
   JButton dice3;
   JButton dice4;
   JButton dice5;
+  //dropdown to allow user to select which place they want their score in
   JComboBox cat;
   JComboBox cat_2;
   // individual panels_1 for score labels_1 and values
@@ -60,25 +61,36 @@ class Game implements ActionListener {
   int counter = 0;
   JTabbedPane tabbed = new JTabbedPane();
   JTabbedPane dropD = new JTabbedPane();
+
+  JFrame pf;
+  JPanel pp;
+  JButton yes;
+  JButton no;
+
+  boolean cond = false;
+  
+  //constructor for the Game class
   public Game() {
 
+    //creates the general layout of the GUI, with 2 panels
     frame = new JFrame("Yahtzee");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+    //top half of the right panel on both of the players' screens
     cats = new JPanel();
     cats.setPreferredSize(new Dimension(295, 75));
     cats.setLayout(new BoxLayout(cats, BoxLayout.PAGE_AXIS));
     cats_2 = new JPanel();
     cats_2.setPreferredSize(new Dimension(295, 75));
     cats_2.setLayout(new BoxLayout(cats_2, BoxLayout.PAGE_AXIS));
+    
+    //bottom half of the right panel on both of the players' screens
     scores_1 = new JPanel();
     scores_1.setPreferredSize(new Dimension(295, 325));
     scores_2 = new JPanel();
     scores_2.setPreferredSize(new Dimension(295, 325));
 
-    // GAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME
-    // CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME
-    // CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODEGAME CODE
+    //code for making the dices roll. Here we are just making the panel, and some buttons. Also makes the grid layout and color changes.
     game = new JPanel();
     game.setPreferredSize(new Dimension(300, 400));
     rollButton = new JButton("Roll dice");
@@ -98,6 +110,8 @@ class Game implements ActionListener {
     dice4.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
     dice5 = new JButton(diceImage1);
     dice5.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+    
+    //creates the buttons and adds them to the panel.
     rollButton = new JButton("Roll Dice");
     dice1.addActionListener(this);
     dice2.addActionListener(this);
@@ -113,7 +127,7 @@ class Game implements ActionListener {
     game.add(dice5);
     game.add(rollButton);
 
-    // scoreboard code
+    // the following code creates the dropdown with the scoring options, for each player
     drop = new JLabel(
         "<html>Upper & Lower Section Scoring <br/>(Choose how you would like your game be scored):</html>",
         SwingConstants.CENTER);
@@ -136,9 +150,12 @@ class Game implements ActionListener {
     cat_2.setEnabled(false);
     dropD.add("Player 1: ", cats);
     dropD.add("Player 2: ", cats_2);
+
+    //helps to switch between player screens, so that the user doesn't have to manual switch between screens
     dropD.setSelectedIndex(0);
     dropD.setEnabledAt(1, false);
-    // score player 1 panel code
+    
+    // the following codes adds all of the labels in both player screens
     scores_1.setLayout(new GridLayout(4, 3));
     scores_2.setLayout(new GridLayout(4, 3));
     for (int i = 0; i < labels_1.length; i++) {
@@ -200,6 +217,7 @@ class Game implements ActionListener {
           labels_2[i] = new JLabel("Total:");
           break;
       }
+      //instantiates 14 new panels for each player screen and adding the 14 new textfields for each player screen
       panels_1[i] = new JPanel();
       panels_1[i].setLayout(new BoxLayout(panels_1[i], BoxLayout.PAGE_AXIS));
       fields_1[i] = new JTextField();
@@ -226,16 +244,18 @@ class Game implements ActionListener {
 
       scores_2.add(panels_2[i]);
     }
+    //this creates a two different tabs for each player
     tabbed.addTab("Player 1:", scores_1);
     tabbed.addTab("Player 2:", scores_2);
-
+    
+    //creates mulitples panels within the frame
     JSplitPane rS = new JSplitPane(SwingConstants.HORIZONTAL, dropD, tabbed);
 
     JSplitPane sl = new JSplitPane(SwingConstants.VERTICAL, game, rS);
 
     // set Orientation for slider
     sl.setOrientation(SwingConstants.VERTICAL);
-    // Packages the frame and sets it visible to the user
+    // packages the frame and sets it visible to the user
     frame.setContentPane(sl);
     frame.pack();
     frame.setVisible(true);
@@ -243,10 +263,10 @@ class Game implements ActionListener {
     fields_2[13].setText("0");
     
   }
-
+//events that will take place based on which button is clicked, or dropdown is selected.
   public void actionPerformed(ActionEvent event) {
     try {
-      // dice rolling
+      // dice rolling, and toggles whether or not the dice can be rolled(Hold dice won't roll this way) again.
       JButton die = (JButton) event.getSource();
       if (die.equals(rollButton)) {
         if (counter < 3) {
@@ -262,7 +282,7 @@ class Game implements ActionListener {
             } else if (i == 4 && dice5_isClicked) {
               continue;
             }
-
+          //assigns random values to the dice when the rollDice button is clicked.
             int a = (int) (Math.random() * 6) + 1;
             JButton temp = new JButton();
             switch (i) {
@@ -287,7 +307,8 @@ class Game implements ActionListener {
           }
           counter++;
           if (counter == 3) {
-                dice1.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
+            //changes the color of dice based off of whether or not they are held.
+                      dice1.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             dice2.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             dice3.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             dice4.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
@@ -295,6 +316,7 @@ class Game implements ActionListener {
             assign();
           }
         }
+        //changes if the dice is held or not with a boolean variable by calling the assign() method and changing the border color of dies to red
       } else {
         if (die.equals(dice1) && counter != 0) {
           if (dice1_isClicked == false) {
@@ -302,7 +324,10 @@ class Game implements ActionListener {
             dice1.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             if (dice1_isClicked != false && dice2_isClicked != false && dice3_isClicked != false
                 && dice4_isClicked != false && dice5_isClicked != false && counter != 0) {
-              assign();
+              double_check();
+              if (cond)
+                assign();
+              cond = true;
             }
           } else {
             dice1_isClicked = false;
@@ -314,7 +339,10 @@ class Game implements ActionListener {
             dice2.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             if (dice1_isClicked != false && dice2_isClicked != false && dice3_isClicked != false
                 && dice4_isClicked != false && dice5_isClicked != false && counter != 0) {
-              assign();
+              double_check();
+              if (cond)
+                assign();
+              cond = true;
             }
           } else {
             dice2_isClicked = false;
@@ -326,7 +354,10 @@ class Game implements ActionListener {
             dice3.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             if (dice1_isClicked != false && dice2_isClicked != false && dice3_isClicked != false
                 && dice4_isClicked != false && dice5_isClicked != false && counter != 0) {
-              assign();
+              double_check();
+              if (cond)
+                assign();
+              cond = true;
             }
           } else {
             dice3_isClicked = false;
@@ -338,7 +369,10 @@ class Game implements ActionListener {
             dice4.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             if (dice1_isClicked != false && dice2_isClicked != false && dice3_isClicked != false
                 && dice4_isClicked != false && dice5_isClicked != false && counter != 0) {
-              assign();
+              double_check();
+              if (cond)
+                assign();
+              cond = true;
             }
           } else {
             dice4_isClicked = false;
@@ -350,18 +384,40 @@ class Game implements ActionListener {
             dice5.setBorder(BorderFactory.createLineBorder(Color.RED, 4));
             if (dice1_isClicked != false && dice2_isClicked != false && dice3_isClicked != false
                 && dice4_isClicked != false && dice5_isClicked != false && counter != 0) {
-              assign();
+              double_check();
+              if (cond)
+                assign();
+              cond = true;
             }
           } else {
             dice5_isClicked = false;
             dice5.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
           }
+        } else {
+          //handles the yes and no button in the popup
+          JButton temp = (JButton) event.getSource();
+
+          if (temp.equals(yes)) {
+            assign();
+          } else {
+            cond = false;
+            dice1.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            dice1_isClicked = false;
+            dice2.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            dice2_isClicked = false;
+            dice3.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            dice3_isClicked = false;
+            dice4.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            dice4_isClicked = false;
+            dice5.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            dice5_isClicked = false;
+          }
+          pf.setVisible(false);
         }
       }
     } catch (Exception e) {
-      System.out.println("Player: " + player);
+      //the following code will be executed if the dropdown is used
       counter = 0;
-      // scoreboard
       JComboBox comboBox = (JComboBox) event.getSource();
       if (comboBox.equals(cat)) {
         helper(comboBox);
@@ -394,9 +450,8 @@ class Game implements ActionListener {
     }
 
   }
-
+//Determines if the catergory selected by user is valid, if valid, gives proper score, else will set score to zero(player 1)
   public void helper(JComboBox comboBox) {
-    // gotta change index to name
     String in = (String) comboBox.getSelectedItem();
     comboBox.removeItem(in);
     comboBox.setEnabled(false);
@@ -464,9 +519,8 @@ class Game implements ActionListener {
     dropD.setEnabledAt(0, false);
     tabbed.setSelectedIndex(1);
   }
-
+  //Determines if the catergory selected by user is valid, if valid, gives proper score, else will set score to zero(player 2)
   public void helper_2(JComboBox comboBox) {
-    // gotta change index to name
     String in = (String) comboBox.getSelectedItem();
     comboBox.removeItem(in);
     comboBox.setEnabled(false);
@@ -535,6 +589,7 @@ class Game implements ActionListener {
     tabbed.setSelectedIndex(0);
   }
 
+  //counts how many times a certain element occurs in the array rolled by the user
   public int count(int num) {
     int counter = 0;
     for (int ele : numsRolled) {
@@ -545,6 +600,7 @@ class Game implements ActionListener {
     return counter;
   }
 
+  //returns true is the user has a three of a kind or a four of a kind, returns false if they don't
   public boolean oK(int type) {
     int counter = 1;
     if (type == 3) {
@@ -574,7 +630,7 @@ class Game implements ActionListener {
     }
     return false;
   }
-
+//determines if the user has a fullhouse, returns true if they have a full house, returns false if they don't
   public boolean fullHouse() {
     int counter = 1;
     int threeNum = 0;
@@ -603,20 +659,22 @@ class Game implements ActionListener {
     return (counter == 3 && leftOver[0] == leftOver[1] && leftOver[0] != threeNum);
   }
 
-  // work on methods for small & large straight, yahtzee, chance
+  // returns whether or not the user possesses a small straight
   public boolean smallStr() {
     return ((count(1) >= 1 && count(2) >= 1 && count(3) >= 1) && count(4) >= 1)
         || (count(2) >= 1 && count(3) >= 1 && count(4) >= 1 && count(5) >= 1) || (count(6) >= 1 && count(3) >= 1 && count(4) >= 1 && count(5) >= 1);
   }
 
+  // returns whether or not the user possesses a large straight
   public boolean largeStr() {
     return (count(1) == 1 && count(2) == 1 && count(3) == 1 && count(4) == 1 && count(5) == 1) || (count(6) == 1 && count(2) == 1 && count(3) == 1 && count(4) == 1 && count(5) == 1);
   }
-
+  //determines if user has gotten a yatzhee(5 of the same dice) Returns true if they have, false if they havent.
   public boolean yahtzee() {
     return count(numsRolled[0]) == 5;
   }
 
+  //returns the sum of all the dies
   public int chance() {
     int counter = 0;
     for (int ele : numsRolled) {
@@ -625,12 +683,7 @@ class Game implements ActionListener {
     return counter;
   }
 
-  public void errorMsg(String msg) {
-    JOptionPane.showMessageDialog(null,
-        msg, "ERROR",
-        JOptionPane.ERROR_MESSAGE);
-  }
-
+  //updates the score within the total box within the scorecard (player 1)
   public String total() {
     String t;
     int sum = 0;
@@ -647,6 +700,8 @@ class Game implements ActionListener {
     }
     if (check >= 63) {
       sum += 35;
+      JOptionPane.showMessageDialog(null,
+        "Player 1, you got 35 extra points!!!");
     }
     t = String.valueOf(sum);
     if (isFilled(fields_1) && isFilled(fields_2)) {
@@ -654,7 +709,7 @@ class Game implements ActionListener {
     }
     return t;
   }
-
+  //updates the score within the total box within the scorecard (player 2)
   public String total_2() {
     String t;
     int sum = 0;
@@ -671,6 +726,8 @@ class Game implements ActionListener {
     }
     if (check >= 63) {
       sum += 35;
+      JOptionPane.showMessageDialog(null,
+        "Player 2, you got 35 extra points!!!");
     }
     t = String.valueOf(sum);
     if (isFilled(fields_1) && isFilled(fields_2)) {
@@ -679,6 +736,7 @@ class Game implements ActionListener {
     return t;
   }
 
+  //changes the image of the dice based on which number they rolled.
   public void changeDice(JButton c, int a) {
     switch (a) {
       case 1:
@@ -702,6 +760,7 @@ class Game implements ActionListener {
     }
   }
 
+  //fills in the array within the dies that was chosen
   public void assign() {
     numsRolled[0] = figure(dice1);
     numsRolled[1] = figure(dice2);
@@ -716,6 +775,7 @@ class Game implements ActionListener {
     }
   }
 
+  //links each die to the number on that die
   public int figure(JButton button) {
     Icon src = button.getIcon();
 
@@ -733,8 +793,9 @@ class Game implements ActionListener {
       return 6;
     }
     return 0;
-  }
-
+  
+    }
+//sets all dice to true or false, allowing them to be clicked or not.
   public void ableDice(boolean s) {
     dice1.setEnabled(s);
     dice2.setEnabled(s);
@@ -742,6 +803,7 @@ class Game implements ActionListener {
     dice4.setEnabled(s);
     dice5.setEnabled(s);
   }
+// Determines the winner by comparing the total scores. Displays a message saying who is the winner.
   public void winner() {
     if (Integer.parseInt(fields_1[13].getText()) > Integer.parseInt(fields_2[13].getText())) {
       JOptionPane.showMessageDialog(null,
@@ -755,6 +817,7 @@ class Game implements ActionListener {
     }
     System.exit(0);
   }
+  //determines if the textfield is empty. True if filled, false if empty.
   public boolean isFilled(JTextField[] fields) {
     for (JTextField f : fields) {
       if (f.getText().equals("")) {
@@ -762,5 +825,28 @@ class Game implements ActionListener {
       }
     }
     return true;
+  }
+  //makes sure that the selected dice by the user is correct
+  public void double_check() {
+    pf = new JFrame();
+    pp = new JPanel();
+
+    pf.setSize(new Dimension(100, 50));
+    
+    JLabel pl = new JLabel("Is this your final dice?");
+    yes = new JButton();
+    yes.setText("Yes");
+    yes.addActionListener(this);
+    no = new JButton();
+    no.setText("No");
+    no.addActionListener(this);
+
+    pp.add(pl);
+    pp.add(yes);
+    pp.add(no);
+    
+    pf.setContentPane(pp);
+    pf.pack();
+    pf.setVisible(true);
   }
 }
